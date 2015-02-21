@@ -12,10 +12,28 @@ namespace Application\Controller;
 use Zend\Mvc\Controller\AbstractActionController;
 use Zend\View\Model\ViewModel;
 
+use Application\Model\Services\Crawler;
+
+
 class IndexController extends AbstractActionController
 {
+
+    /** @return Crawler */
+    private function getCrawler(){
+        return $this->getServiceLocator()->get('Crawler');
+    }
+
     public function indexAction()
     {
+
+        $this->getCrawler()->start();
+
+        $urls = $this->getCrawler()->getUrls();
+
+        foreach($urls as $vUrl){
+            $this->getCrawler()->crawler($vUrl['url'],'/<a href=["\']?((?:.(?!["\']?\s+(?:\S+)=|[>"\']))+.)["\']?>/i');
+        }
+
         return new ViewModel();
     }
 }

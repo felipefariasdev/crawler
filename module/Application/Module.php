@@ -9,6 +9,7 @@
 
 namespace Application;
 
+use Application\Model\Services\Crawler;
 use Zend\Mvc\ModuleRouteListener;
 use Zend\Mvc\MvcEvent;
 
@@ -34,6 +35,16 @@ class Module
                     __NAMESPACE__ => __DIR__ . '/src/' . __NAMESPACE__,
                 ),
             ),
+        );
+    }
+    public function getServiceConfig(){
+        return array(
+            'factories' => array(
+                'Crawler' => function($sm) {
+                        $myClass = new Crawler($sm->get('ZendDbAdapter'));
+                        return $myClass;
+                    }
+            )
         );
     }
 }
