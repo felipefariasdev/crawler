@@ -1,77 +1,79 @@
-ZendSkeletonApplication
-=======================
+---------------------------------
+Descrição do projeto:
 
-Introduction
-------------
-This is a simple, skeleton application using the ZF2 MVC layer and module
-systems. This application is meant to be used as a starting place for those
-looking to get their feet wet with ZF2.
+Construir um "crawler" simples de e-mails, com uma interface web que acompanha o status do processamento.
+----------------------------------
 
-Installation
-------------
+Backend:
 
-Using Composer (recommended)
-----------------------------
-The recommended way to get a working copy of this project is to clone the repository
-and use `composer` to install dependencies using the `create-project` command:
+Desenvolver uma aplicação em PHP que rode em modo console, que:
 
-    curl -s https://getcomposer.org/installer | php --
-    php composer.phar create-project -sdev --repository-url="https://packages.zendframework.com" zendframework/skeleton-application path/to/install
+- leia do banco de dados uma URL para consulta,
+- faça o download do conteúdo desta URL (apenas o texto),
+- encontre dentro do conteúdo desta página página todos os links para outras páginas e adicione no banco de dados
+- encontre todos os emails existentes no texto desta página e adicione no banco de dados
+- marque a URL corrente como visitada
+- repita o processo até que não existam mais URLs não visitadas no banco de dados
 
-Alternately, clone the repository and manually invoke `composer` using the shipped
-`composer.phar`:
 
-    cd my/project/dir
-    git clone git://github.com/zendframework/ZendSkeletonApplication.git
-    cd ZendSkeletonApplication
-    php composer.phar self-update
-    php composer.phar install
+Notas:
+ utilize a expressão regular abaixo para encontrar os links
+ preg_match_all('/<a href=["\']?((?:.(?!["\']?\s+(?:\S+)=|[>"\']))+.)["\']?>/i', $conteudo, $resultados);
+ 
+ utilize a expressão abaixo para localizar todos os e-mails no texto
+ preg_match_all('/\b[A-Z0-9._%-]+@[A-Z0-9.-]+\.[A-Z]{2,4}\b/i', $conteudo, $resultados);
 
-(The `self-update` directive is to ensure you have an up-to-date `composer.phar`
-available.)
+ NÃO usar recursividade de função no design da aplicação
 
-Another alternative for downloading the project is to grab it via `curl`, and
-then pass it to `tar`:
+Regras:
+ - antes de inserir um link, verificar se ele já não existe no banco
+ - antes de inserir um e-mail verificar se ele já não existe no banco
 
-    cd my/project/dir
-    curl -#L https://github.com/zendframework/ZendSkeletonApplication/tarball/master | tar xz --strip-components=1
 
-You would then invoke `composer` to install dependencies per the previous
-example.
+---------------------------------------
 
-Using Git submodules
---------------------
-Alternatively, you can install using native git submodules:
+Frontend:
 
-    git clone git://github.com/zendframework/ZendSkeletonApplication.git --recursive
+Desenvolver uma página web que exibe a lista dos 10 últimos e-mails carregados pelo sistema.
 
-Web Server Setup
-----------------
+ - a lista deve ser exibida por AJAX
+ - utilizar a biblioteca jquery (http://api.jquery.com/jQuery.ajax/)
+ - a lista deve ser atualizada a cada 1 segundo
 
-### PHP CLI Server
 
-The simplest way to get started if you are using PHP 5.4 or above is to start the internal PHP cli-server in the root directory:
+Notas:
+ pegar apenas os 10 últimos adicionados a lista (ex: SELECT email FROM emails ORDER BY id DESC LIMIT 10)
 
-    php -S 0.0.0.0:8080 -t public/ public/index.php
+ não é necessário layout, apenas 1 div que seja atualizado com a lista de emails separados por <br />
+ 
 
-This will start the cli-server on port 8080, and bind it to all network
-interfaces.
+-------------------------------------------
 
-**Note: ** The built-in CLI server is *for development only*.
 
-### Apache Setup
+Pre-requisitos:
+ - Utilize um frameworks neste projeto.
+ - O código deve ser (dentro do possível) orientado a objetos.
+ - O código html da interface web pode ser o mínimo necessário para exibição das informações solicitadas, não perder tempo com interface.
+ - Focar em manter todo código limpo. (inclusive o html)
+ - Banco de dados MySQL
 
-To setup apache, setup a virtual host to point to the public/ directory of the
-project and you should be ready to go! It should look something like below:
 
-    <VirtualHost *:80>
-        ServerName zf2-tutorial.localhost
-        DocumentRoot /path/to/zf2-tutorial/public
-        SetEnv APPLICATION_ENV "development"
-        <Directory /path/to/zf2-tutorial/public>
-            DirectoryIndex index.php
-            AllowOverride All
-            Order allow,deny
-            Allow from all
-        </Directory>
-    </VirtualHost>
+
+Tabelas:
+---------------------------------------------
+CREATE DATABASE `webx`;
+USE `webx`;
+
+CREATE TABLE `webx`.`urls`(
+ `id` INT NOT NULL AUTO_INCREMENT ,
+ `url` VARCHAR(255) ,
+ `visited` ENUM('yes','no') DEFAULT 'no' ,
+ PRIMARY KEY (`id`) );
+
+CREATE TABLE `webx`.`emails`(
+ `id` INT NOT NULL AUTO_INCREMENT ,
+ `email` VARCHAR(255) ,
+ PRIMARY KEY (`id`)  );
+
+-- exemplo de URL inicial
+INSERT INTO `webx`.`urls`(url) VALUES('https://www.google.com.br/?gfe_rd=ctrl&ei=9xcNU6uRGYfJ8Qa-moHwAg&gws_rd=cr#q=webx&safe=off');
