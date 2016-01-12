@@ -61,19 +61,19 @@ Pre-requisitos:
 
 Tabelas:
 ---------------------------------------------
-CREATE DATABASE `webx`;
-USE `webx`;
+CREATE DATABASE `banco`;
+USE `banco`;
 
-CREATE TABLE `webx`.`urls`(
+CREATE TABLE `banco`.`urls`(
  `id` INT NOT NULL AUTO_INCREMENT ,
  `url` VARCHAR(255) ,
  `visited` ENUM('yes','no') DEFAULT 'no' ,
  PRIMARY KEY (`id`) );
 
-CREATE TABLE `webx`.`emails`(
+CREATE TABLE `banco`.`emails`(
  `id` INT NOT NULL AUTO_INCREMENT ,
  `email` VARCHAR(255) ,
  PRIMARY KEY (`id`)  );
 
 -- exemplo de URL inicial
-INSERT INTO `webx`.`urls`(url) VALUES('https://www.google.com.br/?gfe_rd=ctrl&ei=9xcNU6uRGYfJ8Qa-moHwAg&gws_rd=cr#q=webx&safe=off');
+INSERT INTO `banco`.`urls`(url) VALUES('https://www.google.com.br/?gfe_rd=ctrl&ei=9xcNU6uRGYfJ8Qa-moHwAg&gws_rd=cr#q=webx&safe=off');
